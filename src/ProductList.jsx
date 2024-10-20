@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
-import {addItem, removeItem, updateQuantity } from './CartSlice'
+import {addItem} from './CartSlice'
 import { useDispatch } from "react-redux";
 
 function ProductList() {
@@ -282,16 +282,14 @@ function ProductList() {
     setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
     setShowCart(false); // Hide the cart when navigating to About Us
   };
-  const handleContinueShopping = (e) => {
-    e.preventDefault();
+  const handleContinueShopping = () => {
     setShowCart(false);
   };
   const handleAddToCart = (plant) => {
     dispatch(addItem(plant));
     setAddedToCart({...addedToCart, [plant.name]: true});
-    
-
   };
+
   return (
     <div>
       <div className="navbar" style={styleObj}>
