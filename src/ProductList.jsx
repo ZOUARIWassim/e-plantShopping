@@ -2,15 +2,32 @@ import React, { useState, useEffect } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
 import {addItem} from './CartSlice'
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 
 function ProductList() {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-
+    
   const [addedToCart, setAddedToCart] = useState({}); // State to store the items added to the cart
-    const dispatch = useDispatch();
+  const [totalQuantity, setTotalQuantity] = useState(0); // State to store the total quantity of items in the cart
+  const dispatch = useDispatch();
+  
+  const cart = useSelector(state => state.cart.items);
 
+  useEffect(() => {
+    const newAddedToCart = cart.reduce((acc, item) => {
+        acc[item.name] = true; // Set the plant name as a key with value true
+        return acc; // Return the accumulator for the next iteration
+    }, {}); // Start with an empty object
+    const totalQuantity = cart.reduce((total, item) => {
+        return total + item.quantity; // Accumulate the quantity of each item
+    }, 0);
+    
+    setTotalQuantity(totalQuantity); // Update the totalQuantity state with the total quantity of items in the cart
+    setAddedToCart(newAddedToCart); // Update the addedToCart state with the newAddedToCart object
+}, [cart]);
+
+  
   const plantsArray = [
     {
       category: "Air Purifying Plants",
@@ -287,7 +304,7 @@ function ProductList() {
   };
   const handleAddToCart = (plant) => {
     dispatch(addItem(plant));
-    setAddedToCart({...addedToCart, [plant.name]: true});
+    
   };
 
   return (
@@ -338,6 +355,14 @@ function ProductList() {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
+                <span style={{
+                    position: 'absolute',
+                    top: '35px',
+                    left: '96.7%',
+                    fontSize: '25px' 
+                }}>
+                    {totalQuantity}
+                </span>
               </h1>
             </a>
           </div>
@@ -354,7 +379,7 @@ function ProductList() {
                         <img className="product-image" src={plant.image} alt={plant.name} />
                         <div className="product-title">{plant.name}</div>
                         {/*Similarly like the above plant.name show other details like description and cost*/}
-                        <button  className="product-button" onClick={() => handleAddToCart(plant)}>Add to Cart</button>
+                        <button  className="product-button" onClick={() => handleAddToCart(plant) } disabled={addedToCart[plant.name]}>Add to Cart</button>
                     </div>
                     ))}
                 </div>
